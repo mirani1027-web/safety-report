@@ -46,8 +46,8 @@ def send_mail():
     if photo:
         msg.add_attachment(
             photo.read(),
-            maintype='image',
-            subtype='jpeg',
+            maintype='applocation',
+            subtype='octet-stream',
             filename=photo.filename
         )
 
