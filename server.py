@@ -19,6 +19,7 @@ def send_mail():
 
     
     photo = request.files.get('photo')
+    msg = EmailMassage()
 
     if photo and photo.filename != '':
         msg.add_attachment(
@@ -28,8 +29,6 @@ def send_mail():
             filename=photo.filename
         )
 
-
-    msg = EmailMessage()
 
     msg['Subject'] = 'LG화학 작업허가서 현장 점검'
     msg['From'] = 'lgchem.safety.report@gmail.com'
