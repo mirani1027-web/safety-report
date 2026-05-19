@@ -1,26 +1,39 @@
-from flask import Flask, request
-from flask_cors import CORS
-from email.message import EmailMessage
-import smtplib
-from flask import render_template
-
-app = Flask(__name__)
-CORS(app)
-
-
-
 @app.route('/send', methods=['POST'])
 def send_mail():
 
-    permit_no = request.form.get('permitNo','')
-    bad = request.form.get('bad','')
-    good = request.form.get('good','')
-    etc = request.form.get('etc','')
+    permit_no = request.form.get('permitNo', '')
+    bad = request.form.get('bad', '')
+    good = request.form.get('good', '')
+    etc = request.form.get('etc', '')
 
-    
     photo = request.files.get('photo')
-    msg = EmailMassage()
 
+    # ✅ 1. 먼저 msg 생성
+    msg = EmailMessage()
+
+    msg['Subject'] = 'LG화학 작업허가서 현장 점검'
+    msg['From'] = '본인gmail@gmail.com'
+    msg['To'] = '본인회사메일@회사.com'
+
+    # ✅ 2. 본문
+    body = f"""
+[LG화학 작업허가서 현장 점검]
+
+허가서번호: {permit_no}
+
+부적합사항:
+{bad}
+
+우수사항:
+{good}
+
+기타:
+{etc}
+"""
+
+    msg.set_content(body)
+
+    # ✅ 3. 사진 첨부
     if photo and photo.filename != '':
         msg.add_attachment(
             photo.read(),
@@ -29,53 +42,13 @@ def send_mail():
             filename=photo.filename
         )
 
-
-    msg['Subject'] = 'LG화학 작업허가서 현장 점검'
-    msg['From'] = 'lgchem.safety.report@gmail.com'
-    msg['To'] = 'mpark10@lgchem.com'
-
-    body = f"""
-[LG화학 작업허가서 현장 점검]
-
-■ 작업허가서 번호
-{permit_no}
-
-■ 부적합사항
-{bad}
-
-■ 우수사항
-{good}
-
-■ 기타
-{etc}
-"""
-
-    msg.set_content(body)
-
-    if photo:
-        msg.add_attachment(
-            photo.read(),
-            maintype='applocation',
-            subtype='octet-stream',
-            filename=photo.filename
-        )
-
+    # ✅ 4. 메일 전송
     with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
-
         smtp.starttls()
-
         smtp.login(
-            'lgchem.safety.report@gmail.com',
-            'sekj mrij ppxy mbqg'
+            '본인gmail@gmail.com',
+            '앱비밀번호'
         )
-
         smtp.send_message(msg)
 
     return '메일 전송 완료'
-
-@app.route('/')
-def home():
-    return render_template('test.html')
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
