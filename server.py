@@ -12,12 +12,22 @@ CORS(app)
 @app.route('/send', methods=['POST'])
 def send_mail():
 
-    permit_no = request.form.get('permitNo')
-    bad = request.form.get('bad')
-    good = request.form.get('good')
-    etc = request.form.get('etc')
+    permit_no = request.form.get('permitNo','')
+    bad = request.form.get('bad','')
+    good = request.form.get('good','')
+    etc = request.form.get('etc','')
 
+    
     photo = request.files.get('photo')
+
+    if photo and photo.filename != '':
+        msg.add_attachment(
+            photo.read(),
+            maintype='application',
+            subtype='octet-stream',
+            filename=photo.filename
+        )
+
 
     msg = EmailMessage()
 
