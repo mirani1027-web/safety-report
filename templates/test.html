@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LG화학 작업허가서 현장 점검</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:"맑은 고딕", sans-serif;
+    background:#f3f4f6;
+}
+
+.container{
+    max-width:480px;
+    margin:auto;
+    background:white;
+    min-height:100vh;
+}
+
+.header{
+    background:#c4002f;
+    color:white;
+    padding:18px;
+}
+
+.header h1{
+    margin:0;
+    font-size:22px;
+}
+
+.header p{
+    margin-top:5px;
+    font-size:13px;
+    opacity:0.9;
+}
+
+.content{
+    padding:18px;
+}
+
+label{
+    display:block;
+    margin-top:14px;
+    margin-bottom:6px;
+    font-size:13px;
+    font-weight:bold;
+    color:#444;
+}
+
+input,
+textarea{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    padding:12px;
+    font-size:14px;
+    font-family:"맑은 고딕", sans-serif;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+input[readonly]{
+    background:#f5f5f5;
+}
+
+.photo-box{
+    margin-top:10px;
+}
+
+.preview{
+    width:100%;
+    margin-top:12px;
+    border-radius:10px;
+    display:none;
+    border:1px solid #ddd;
+}
+
+.notice{
+    margin-top:14px;
+    background:#fff4f4;
+    border:1px solid #ffc9c9;
+    color:#c4002f;
+    padding:12px;
+    border-radius:8px;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.button-area{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+.reset-btn{
+    flex:1;
+    background:#6b7280;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:14px;
+    font-size:15px;
+    font-weight:bold;
+    font-family:"맑은 고딕", sans-serif;
+}
+
+.send-btn{
+    flex:1;
+    background:#c4002f;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:14px;
+    font-size:15px;
+    font-weight:bold;
+    font-family:"맑은 고딕", sans-serif;
+}
+
+.footer{
+    text-align:center;
+    padding:16px;
+    color:#777;
+    font-size:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>LG화학 작업허가서 현장 점검</h1>
+        <p>현장 부적합 / 우수사항 등록</p>
+    </div>
+
+    <div class="content">
+
+        <label>날짜</label>
+        <input type="date" id="date" readonly>
+
+        <label>
+            작업허가서 번호
+            <span style="color:red;">*</span>
+        </label>
+
+        <input
+            type="text"
+            id="permitNo"
+            placeholder="예: SW26172050">
+
+        <label>
+            부적합사항
+            <span style="color:red;">*</span>
+        </label>
+
+        <textarea
+            id="bad"
+            placeholder="부적합사항 입력"></textarea>
+
+        <label>우수사항</label>
+
+        <textarea
+            id="good"
+            placeholder="우수사항 입력"></textarea>
+
+        <label>기타</label>
+
+        <textarea
+            id="etc"
+            placeholder="기타 의견 입력"></textarea>
+
+        <label>사진 첨부</label>
+
+        <div class="photo-box">
+            <input
+                type="file"
+                id="photo"
+                accept="image/*"
+                capture="environment">
+        </div>
+
+        <img id="preview" class="preview">
+
+        <div class="notice">
+            ※ 사진 포함 자동 전송됩니다.
+        </div>
+
+        <div class="button-area">
+
+            <button
+                class="reset-btn"
+                onclick="resetPhoto()">
+
+                사진첨부초기화
+
+            </button>
+
+            <button
+                class="send-btn"
+                onclick="sendMail()">
+
+                전송
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        LG화학 환경안전 점검 시스템
+    </div>
+
+</div>
+
+<script>
+
+// 오늘 날짜 자동 입력
+document.getElementById("date").value =
+    new Date().toISOString().split("T")[0];
+
+
+// 사진 미리보기
+document.getElementById("photo").addEventListener("change", function(e){
+
+    const file = e.target.files[0];
+    const preview = document.getElementById("preview");
+
+    if(file){
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+
+    }
+
+});
+
+
+// 사진 초기화
+function resetPhoto(){
+
+    document.getElementById("photo").value = "";
+
+    const preview = document.getElementById("preview");
+
+    preview.src = "";
+    preview.style.display = "none";
+
+}
+
+// 메일 전송
+async function sendMail(){
+
+    const date =
+        document.getElementById("date").value;
+
+    const permitNo =
+        document.getElementById("permitNo").value.trim();
+
+    const bad =
+        document.getElementById("bad").value.trim();
+
+    const good =
+        document.getElementById("good").value.trim();
+
+    const etc =
+        document.getElementById("etc").value.trim();
+
+    const photo =
+        document.getElementById("photo").files[0];
+
+
+    // 필수값 체크
+    if(permitNo === ""){
+
+        alert("작업허가서 번호를 입력해주세요.");
+        return;
+
+    }
+
+    if(bad === ""){
+
+        alert("부적합사항을 입력해주세요.");
+        return;
+
+    }
+
+
+    // FormData 생성
+    const formData = new FormData();
+
+    formData.append("date", date);
+    formData.append("permitNo", permitNo);
+    formData.append("bad", bad);
+    formData.append("good", good);
+    formData.append("etc", etc);
+
+    if(photo){
+
+        formData.append("photo", photo);
+
+    }
+
+
+    try{
+
+        const response = await fetch(
+            "http://127.0.0.1:5000/send",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const result = await response.text();
+
+        alert(result);
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert("전송 실패");
+
+    }
+
+}
+
+
+</script>
+
+</body>
+</html>
