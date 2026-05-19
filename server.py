@@ -27,8 +27,8 @@ def send_mail():
     msg = EmailMessage()
 
     msg['Subject'] = 'LG화학 작업허가서 현장 점검'
-    msg['From'] = '본인gmail@gmail.com'
-    msg['To'] = '본인회사메일@회사.com'
+    msg['From'] = 'lgchem.safety.report@gmail.com'
+    msg['To'] = 'mpark10@lgchem.com'
 
     # ✅ 2. 본문
     body = f"""
@@ -61,8 +61,8 @@ def send_mail():
     with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
         smtp.starttls()
         smtp.login(
-            '본인gmail@gmail.com',
-            '앱비밀번호'
+            'lgchem.safety.report@gmail.com',
+            'sekj mrij ppxy mbqg'
         )
         smtp.send_message(msg)
 
