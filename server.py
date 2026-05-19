@@ -1,3 +1,18 @@
+
+from flask import Flask, request, render_template
+from flask_cors import CORS
+from email.message import EmailMessage
+import smtplib
+
+# ✅ 이게 먼저 있어야 함
+app = Flask(__name__)
+CORS(app)
+
+# ✅ 메인 페이지
+@app.route('/')
+def home():
+    return render_template('safety.html')
+
 @app.route('/send', methods=['POST'])
 def send_mail():
 
